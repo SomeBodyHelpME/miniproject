@@ -56,7 +56,7 @@ router.get(/^\/[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?
 
   if (typeof regionName === "undefined") {
     res.status(400).json({
-      msg: regionName + "은(는) 아직 지원하지 않아요."
+      msg: regionFullName + "은(는) 아직 지원하지 않아요."
     });
     return;
   }
