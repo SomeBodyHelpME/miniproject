@@ -18,7 +18,10 @@ db.once('open', function() {
 	console.log("Connected to mongod server");
 });
 
-mongoose.connect('mongodb://localhost/miniproject');
+mongoose.connect('mongodb://localhost/miniproject', {
+  useNewUrlParser: true,
+  useCreateIndex: true
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
