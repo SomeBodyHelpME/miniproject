@@ -22,7 +22,7 @@ const j = schedule.scheduleJob('0 1 * * * *', async() => {
   }
   let minute = '00';
   let date = year + month + day + hour + minute;
-  let url = 'http://openAPI.seoul.go.kr:8088/71504a4669646c7437386c46694d4a/json/TimeAverageAirQuality/1/25/' + date;
+  let url = 'http://openAPI.seoul.go.kr:8088/4c736d4442646c743738765455766b/json/TimeAverageAirQuality/1/25/' + date;
 
   request(url, async(err, response, body) => {
   	let data = JSON.parse(body).TimeAverageAirQuality.row;
@@ -39,7 +39,7 @@ const j = schedule.scheduleJob('0 1 * * * *', async() => {
 
 });	// schedule.scheduleJob
 
-const j2 = schedule.scheduleJob('0 1 * * * *', async() => {
+const j2 = schedule.scheduleJob('5 1 * * * *', async() => {
   let time = moment().format("YYYY-MM-DD HH:mm:ss");
   let year = time.substring(0, 4);
   let month = time.substring(5, 7);
@@ -81,7 +81,7 @@ const j2 = schedule.scheduleJob('0 1 * * * *', async() => {
         }
 
         let weatherData = {
-          MSRDT : base_data + base_time,
+          MSRDT : base_date + base_time,
           MSRSTE_NM : arr[i],
           Humidity : humidity,
           Temperatures : temperature

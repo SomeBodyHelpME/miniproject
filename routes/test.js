@@ -21,6 +21,37 @@ router.post('/', async(req, res) => {
 	})
 });
 
+router.get('/test2', async (req, res) => {
+  let time = moment().format("YYYY-MM-DD HH:mm:ss");
+  let year = time.substring(0, 4);
+  let month = time.substring(5, 7);
+  let day = time.substring(8, 10);
+  let hour = time.substring(11, 13) - 1;
+  if (hour < 0) {
+    day = day - 1;
+    hour = 23;
+  }
+  if (hour < 10) {
+    hour = '0' + hour;
+  }
+  let minute = '00';
+  let date = year + month + day + hour + minute;
+  let url = 'http://openAPI.seoul.go.kr:8088/4c736d4442646c743738765455766b/json/TimeAverageAirQuality/1/25/' + date;
+
+  request(url, async(err, response, body) => {
+    let data = JSON.parse(body).TimeAverageAirQuality.row;
+    await dust.create(data, async (err, dusts) => {
+      if (err) {
+        console.log('Internal Server Error');
+      } else {
+        
+        console.log('Success to get Data : ' + date);
+        
+      }
+    }); // await dust.create
+  }); // request
+});
+
 router.get('/test', async (req, res) => {
 
   let time = moment().format("YYYY-MM-DD HH:mm:ss");
