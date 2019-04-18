@@ -36,17 +36,18 @@ const regionNames = [
   "중랑구"
 ];
 
-router.get(/^\/[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/, async (req, res) => {
-  let long = req.url.split(",")[0];
-  let lat = req.url.split(",")[1];
+router.get(/^\/[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/, async (req, res) => {
+  const point = req.url.substring(1);
+  let long = point.split(",")[0];
+  let lat = point.split(",")[1];
 
-  const regionFullName = await region.near(long, lat);
+  const regionFullName = await region.findNear(long, lat);
 
   if (!regionFullName) {
     res.sendStatus(400);
   }
 
-  const regionName = regionNames.filter(regionFullName.includes)[0];
+  const regionName = regionNames.filter(name => regionFullName.includes(name))[0];
 
   if (typeof (regionName) === 'undefined') {
     res.sendStatus(400);
