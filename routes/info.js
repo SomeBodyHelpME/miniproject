@@ -36,7 +36,7 @@ const regionNames = [
   "중랑구"
 ];
 
-router.get(/^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/, async (req, res) => {
+router.get(/^\/[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/, async (req, res) => {
   let long = req.url.split(",")[0];
   let lat = req.url.split(",")[1];
 
