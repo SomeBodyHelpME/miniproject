@@ -8,4 +8,5 @@ router.get('/', function (req, res, next) {
 router.use('/info', require('./info.js'));
 router.use('/test', require('./test.js'));
 router.use('/regions', require('./region'));
+router.use('/mask', require('./mask'));
 module.exports = router;

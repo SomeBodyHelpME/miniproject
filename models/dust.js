@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var dustSchema = new Schema({
+const dustSchema = new Schema({
 	MSRDT : String,
 	MSRSTE_NM : String,
 	NO2 : Number,
@@ -12,6 +12,6 @@ var dustSchema = new Schema({
 	PM25 : Number
 });
 
-dustSchema.createIndex({"MSRSTE_NM": "text"})
+dustSchema.index({"MSRSTE_NM": "text"})
 
 module.exports = mongoose.model('dusts', dustSchema);
