@@ -8,8 +8,6 @@ var mongoose = require('mongoose');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-const scheduler = require('./routes/scheduler');
-
 var app = express();
 
 var db = mongoose.connection;

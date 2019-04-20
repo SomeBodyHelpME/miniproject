@@ -12,4 +12,6 @@ var dustSchema = new Schema({
 	PM25 : Number
 });
 
-module.exports = mongoose.model('dust', dustSchema);
+dustSchema.createIndex({"MSRSTE_NM": "text"})
+
+module.exports = mongoose.model('dusts', dustSchema);

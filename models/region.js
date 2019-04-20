@@ -14,7 +14,7 @@ const Region = new Schema({
     }
 )
 
-Region.statics.findNear = function(longitude, latitude) {
+Region.statics.findNear = function (longitude, latitude) {
     return this.findOne({
         geometry: {
             $near: {
@@ -26,11 +26,24 @@ Region.statics.findNear = function(longitude, latitude) {
             }
         }
     })
-    .then(result => {
-        if (!result) {
-            return null;
-        }
-        return result.properties.adm_nm;
-    });
+        .then(result => {
+            if (!result) {
+                return null;
+            }
+            return result.properties.adm_nm;
+        });
+}
+
+Region.statics.findAllByRegionName = function (regionName) {
+    return this.find({
+        "properties.adm_nm": RegExp(regionName)
+    })
+}
+
+Region.methods.toDto = function() {
+    return {
+        "id": this._id,
+        "regionName": this.properties.adm_nm
+    }
 }
 module.exports = mongoose.model('region', Region)
