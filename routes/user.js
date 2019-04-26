@@ -36,7 +36,7 @@ router.put("/me/regions", authRequired, async (req, res) => {
 
   await user.changeRegions(regionIds);
 
-  res.status(200).json({ msg: "와 굿" });
+  res.status(200).json({ msg: "와 굿", data: regionIds });
 });
 
 router.get("/me/regions", authRequired, async (req, res) => {
