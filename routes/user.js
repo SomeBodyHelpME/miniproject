@@ -25,9 +25,16 @@ router.put("/token", async (req, res) => {
     return;
   }
 
-  const user = await User.create(deviceId, firebaseToken);
-
-  res.status(200).json({ data: user });
+  const user = await User.findOne({device_id: deviceId})
+  
+  if (user === null) {
+    res.status(200).json({ data: await User.create(deviceId, firebaseToken) });
+    return;
+  }
+  
+  await user.updateToken(firebaseToken)
+  
+  res.status(200).json({ data:  user});
 });
 
 router.put("/me/regions", authRequired, async (req, res) => {

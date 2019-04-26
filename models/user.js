@@ -17,7 +17,13 @@ User.statics.create = function(deviceId, firebaseToken) {
 
 User.methods.changeRegions = function(regionIds) {
     this.regions = regionIds;
-    return this.save()
+    return this.save();
+}
+
+User.methods.updateToken = function (firebaseToken) {
+    console.log(firebaseToken)
+    this.firebase_token = firebaseToken;
+    return this.save();
 }
 
 
