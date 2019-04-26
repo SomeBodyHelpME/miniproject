@@ -82,7 +82,7 @@ const j2 = schedule.scheduleJob('5 1 * * * *', async() => {
 
         let weatherData = {
           MSRDT : base_date + base_time,
-          MSRSTE_NM : arr[i],
+          MSRSTE_NM : "서울특별시" + arr[i],
           Humidity : humidity,
           Temperatures : temperature
         };

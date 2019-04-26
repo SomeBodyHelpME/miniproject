@@ -113,4 +113,56 @@ router.get(/^\/[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?
 }
 );
 
+router.get('/:code', async (req, res) => {
+  let code = req.params.code;
+  
+  let time = moment().format("YYYY-MM-DD HH:mm:ss");
+  let year = time.substring(0, 4);
+  let month = time.substring(5, 7);
+  let dustday = time.substring(8, 10);
+  let dusthour = time.substring(11, 13) - 1;
+  let minute = '00';
+
+  let weatherday = time.substring(8, 10);
+  let weatherhour = time.substring(11, 13);
+
+  if (weatherhour < 2) {
+    weatherday = weatherday - 1;
+    weatherhour = 23;
+  }
+
+  weatherhour = weatherhour - (weatherhour + 1) % 3;
+  if (weatherhour < 10) {
+    weatherhour = '0' + weatherhour;
+  }
+  let base_date = year + month + weatherday;
+  let base_time = weatherhour + minute;
+
+
+  if (dusthour < 0) {
+    dustday = dustday - 1;
+    dusthour = 23;
+  }
+  if (dusthour < 10) {
+    dusthour = '0' + dusthour;
+  }
+  
+  let date = year + month + dustday + dusthour + minute;
+
+
+  let selectdust = await dust.find({"MSRSTE_NM" : regionNames[code], "MSRDT" : date});
+  let selectweather = await weather.find({"MSRSTE_NM" : regionNames[code], "MSRDT" : base_date + base_time});
+  
+  if (!selectdust && !selectweather) {
+    res.status(500).send({
+      message : "Internal Server Error"
+    });
+  } else {
+    res.status(200).send({
+      msg : "Success to Get Data",
+      dust : selectdust[0],
+      weather : selectweather[0]
+    });  
+  }
+});
 module.exports = router;
