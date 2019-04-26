@@ -15,10 +15,18 @@ router.put("/status", authRequired, async (req, res) => {
     return
   }
 
-  const mask = await Mask.create(req.request_id, status)
+  const mask = await Mask.create(req.user, status)
 
   res.status(200).json({
     data: mask
+  })
+});
+
+router.get('/status', authRequired, async (req, res) => {
+  const userId = req.request_id
+  
+  res.status(200).json({
+    data: await Mask.findMaskStatusByUserId(userId)
   })
 });
 

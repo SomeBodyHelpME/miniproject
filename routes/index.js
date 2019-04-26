@@ -9,4 +9,6 @@ router.use('/info', require('./info.js'));
 router.use('/test', require('./test.js'));
 router.use('/regions', require('./region'));
 router.use('/mask', require('./mask'));
+router.use('/users', require('./user'));
+
 module.exports = router;

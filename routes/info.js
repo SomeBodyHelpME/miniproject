@@ -36,30 +36,57 @@ const regionNames = [
   "중랑구"
 ];
 
-router.get(/^\/[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/, async (req, res) => {
-  const point = req.url.substring(1);
-  let long = point.split(",")[0];
-  let lat = point.split(",")[1];
+router.get(
+  /^\/[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/,
+  async (req, res) => {
+    try {
+      const point = req.url.substring(1);
+      let long = point.split(",")[0];
+      let lat = point.split(",")[1];
 
-  const regionFullName = await region.findNear(long, lat);
+      const regionFullName = await region.findNear(long, lat);
 
-  if (!regionFullName) {
-    res.status(400).json({
-      msg: point + "은(는) 대한민국 바깥인 것 같아요."
-    });
-    return;
+      console.log(regionFullName);
+      if (!regionFullName) {
+        res.status(400).json({
+          msg: point + "은(는) 대한민국 바깥인 것 같아요."
+        });
+        return;
+      }
+
+      const regionName = regionNames.filter(name =>
+        regionFullName.includes(name)
+      )[0];
+
+      if (typeof regionName === "undefined") {
+        res.status(400).json({
+          msg: regionFullName + "은(는) 아직 지원하지 않아요."
+        });
+        return;
+      }
+
+      let dustInfo = await dust.search(regionName);
+      let weatherInfo = await weather.search(regionName);
+
+      if (!dustInfo && !weatherInfo) {
+        res.status(500).send({
+          message: "Internal Server Error"
+        });
+      } else {
+        res.status(200).send({
+          msg: "Success to Get Data",
+          dust: dustInfo,
+          weather: weatherInfo
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
+);
 
-  const regionName = regionNames.filter(name =>
-    regionFullName.includes(name)
-  )[0];
-
-  if (typeof regionName === "undefined") {
-    res.status(400).json({
-      msg: regionFullName + "은(는) 아직 지원하지 않아요."
-    });
-    return;
-  }
+router.get("/:code", async (req, res) => {
+  let code = req.params.code;
 
   let time = moment().format("YYYY-MM-DD HH:mm:ss");
   let year = time.substring(0, 4);
@@ -93,13 +120,16 @@ router.get(/^\/[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?
 
   let date = year + month + dustday + dusthour + minute;
 
-  let selectdust = await dust.find({ MSRSTE_NM: regionName, MSRDT: date });
+  let selectdust = await dust.find({
+    MSRSTE_NM: regionNames[code],
+    MSRDT: date
+  });
   let selectweather = await weather.find({
-    MSRSTE_NM: regionName,
+    MSRSTE_NM: regionNames[code],
     MSRDT: base_date + base_time
   });
 
-  if (selectdust.length === 0 && selectweather.length === 0) {
+  if (!selectdust && !selectweather) {
     res.status(500).send({
       message: "Internal Server Error"
     });
@@ -109,60 +139,6 @@ router.get(/^\/[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?
       dust: selectdust[0],
       weather: selectweather[0]
     });
-  }
-}
-);
-
-router.get('/:code', async (req, res) => {
-  let code = req.params.code;
-  
-  let time = moment().format("YYYY-MM-DD HH:mm:ss");
-  let year = time.substring(0, 4);
-  let month = time.substring(5, 7);
-  let dustday = time.substring(8, 10);
-  let dusthour = time.substring(11, 13) - 1;
-  let minute = '00';
-
-  let weatherday = time.substring(8, 10);
-  let weatherhour = time.substring(11, 13);
-
-  if (weatherhour < 2) {
-    weatherday = weatherday - 1;
-    weatherhour = 23;
-  }
-
-  weatherhour = weatherhour - (weatherhour + 1) % 3;
-  if (weatherhour < 10) {
-    weatherhour = '0' + weatherhour;
-  }
-  let base_date = year + month + weatherday;
-  let base_time = weatherhour + minute;
-
-
-  if (dusthour < 0) {
-    dustday = dustday - 1;
-    dusthour = 23;
-  }
-  if (dusthour < 10) {
-    dusthour = '0' + dusthour;
-  }
-  
-  let date = year + month + dustday + dusthour + minute;
-
-
-  let selectdust = await dust.find({"MSRSTE_NM" : regionNames[code], "MSRDT" : date});
-  let selectweather = await weather.find({"MSRSTE_NM" : regionNames[code], "MSRDT" : base_date + base_time});
-  
-  if (!selectdust && !selectweather) {
-    res.status(500).send({
-      message : "Internal Server Error"
-    });
-  } else {
-    res.status(200).send({
-      msg : "Success to Get Data",
-      dust : selectdust[0],
-      weather : selectweather[0]
-    });  
   }
 });
 module.exports = router;
